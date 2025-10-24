@@ -25,4 +25,24 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Audio session table for managing recording sessions
+ */
+export const audioSessions = mysqlTable("audioSessions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  sessionId: varchar("sessionId", { length: 64 }).notNull().unique(),
+  transcript: text("transcript"),
+  summary: text("summary"),
+  summaryType: varchar("summaryType", { length: 32 }).default("medium"),
+  summaryLanguage: varchar("summaryLanguage", { length: 32 }).default("en"),
+  translation: text("translation"),
+  translationLanguage: varchar("translationLanguage", { length: 32 }),
+  deepgramCalls: int("deepgramCalls").default(0),
+  accumulatedSize: int("accumulatedSize").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AudioSession = typeof audioSessions.$inferSelect;
+export type InsertAudioSession = typeof audioSessions.$inferInsert;
