@@ -80,7 +80,8 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .recording-section {
+        .recording-section,
+        .summary-section {
             grid-column: 1 / -1;
         }
 
@@ -614,8 +615,21 @@
                     stream.getTracks().forEach(track => track.stop());
                     this.updateStatus('Ready to record', 'ready');
                 } catch (error) {
-                    console.error('Microphone permission denied:', error);
-                    this.updateStatus('Microphone access denied. Please allow microphone access to use this app.', 'error');
+                    console.error('Microphone permission error:', error);
+                    let errorMessage = 'Microphone access denied. ';
+                    if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                        errorMessage += 'Please allow microphone access in your browser settings and refresh the page.';
+                    } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+                        errorMessage += 'No microphone device found. Please check your hardware.';
+                    } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+                        errorMessage += 'Microphone is in use by another application. Please close other apps and try again.';
+                    } else if (error.name === 'SecurityError') {
+                        errorMessage += 'This application requires HTTPS to access the microphone. Please use a secure connection.';
+                    } else {
+                        errorMessage += 'Please check your microphone settings and try again.';
+                    }
+                    this.updateStatus(errorMessage, 'error');
+                    this.startBtn.disabled = true;
                 }
             }
 
