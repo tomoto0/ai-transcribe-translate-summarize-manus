@@ -1042,11 +1042,28 @@
             }
 
             formatSummary(summary, type) {
-                if (type === 'detailed') {
-                    return summary.replace(/\n/g, '<br>');
-                } else {
-                    return summary.replace(/\n/g, '<br>');
-                }
+                // Convert markdown to HTML
+                let html = summary;
+                
+                // Convert bold markdown (**text**) to <strong>
+                html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // Convert italic markdown (*text*) to <em>
+                html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                
+                // Convert line breaks to <br>
+                html = html.replace(/\n/g, '<br>');
+                
+                // Convert markdown headers (# text) to <h3>
+                html = html.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+                html = html.replace(/^## (.*?)$/gm, '<h3>$1</h3>');
+                html = html.replace(/^# (.*?)$/gm, '<h3>$1</h3>');
+                
+                // Convert markdown lists
+                html = html.replace(/^- (.*?)$/gm, '<li>$1</li>');
+                html = html.replace(/(<li>.*?<\/li>)/s, '<ul>$1</ul>');
+                
+                return html;
             }
 
             exportTxt() {
@@ -1054,18 +1071,30 @@
                 const translation = this.translationText.textContent;
                 const summary = this.summaryText.textContent;
                 
-                let content = "=== AI PRESENTATION NOTES ===\n\n";
-                content += "TRANSCRIPTION:\n" + transcription + "\n\n";
+                let content = "=== AI PRESENTATION NOTES ===\n";
+                content += "Generated on: " + new Date().toLocaleString() + "\n";
+                content += "========================================\n\n";
+                
+                if (transcription) {
+                    content += "TRANSCRIPTION\n";
+                    content += "----------------------------------------\n";
+                    content += transcription + "\n\n";
+                }
                 
                 if (translation) {
-                    content += "TRANSLATION:\n" + translation + "\n\n";
+                    content += "TRANSLATION\n";
+                    content += "----------------------------------------\n";
+                    content += translation + "\n\n";
                 }
                 
                 if (summary) {
-                    content += "SUMMARY:\n" + summary + "\n\n";
+                    content += "SUMMARY\n";
+                    content += "----------------------------------------\n";
+                    content += summary + "\n\n";
                 }
                 
-                content += "Generated on: " + new Date().toLocaleString();
+                content += "========================================\n";
+                content += "End of presentation notes";
                 
                 this.downloadFile(content, 'presentation-notes.txt', 'text/plain');
             }

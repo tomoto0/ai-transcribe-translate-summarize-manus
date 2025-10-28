@@ -24,4 +24,7 @@
 ## Bug Fixes
 - [x] マイクロフォンアクセス拒否時のエラーハンドリング改善
 - [x] AI Summary表示ボックスを全幅に調整
+- [x] LLMプロンプトの改善（余計なエイの返事を削除）
+- [x] Markdown記法寯応（AI Summaryボックス）
+- [x] presentation-notes.txtの改行調整
 
